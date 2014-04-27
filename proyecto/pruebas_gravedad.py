@@ -65,6 +65,10 @@ def juego():
 	piso = Block(NEGRO,800,100)
 	piso.rect.x=0
 	piso.rect.y=540
+	# definicion de otro objeto
+	cosa = Block(NEGRO,250,50)
+	cosa.rect.x=0
+	cosa.rect.y=300
 	
 
 	# configuraciones de pygame,reloj y teclado
@@ -78,15 +82,33 @@ def juego():
 
 		sprites.draw(pantalla)
 		pantalla.blit(piso.image,piso.rect)
+		pantalla.blit(cosa.image,cosa.rect)
 		pygame.display.flip()
 		tecla = pygame.key.get_pressed()
 
 		lista_colicionados_con_piso = pygame.sprite.spritecollide(piso, sprites, False)
+		lista_colicionados_con_cosa = pygame.sprite.spritecollide(cosa, sprites, False)
 
-		for x in lista_colicionados_con_piso:
-			x.aire = False
-			x.vely = 0
-			x.rect.y=piso.rect.y-x.height
+		if cubo in lista_colicionados_con_piso:
+			cubo.aire = False
+			cubo.vely = 0
+			cubo.rect.y=piso.rect.y-cubo.height+1
+		elif cubo in lista_colicionados_con_cosa:
+			cubo.aire = False
+			cubo.vely = 0
+			cubo.rect.y=cosa.rect.y-cubo.height+1
+		else:
+			cubo.aire = True
+
+		#for x in lista_colicionados_con_cosa:
+		#	x.aire = False
+		#	x.vely = 0
+		#	x.rect.y=cosa.rect.y-x.height
+
+		#for x in lista_colicionados_con_piso:
+		#	x.aire = False
+		#	x.vely = 0
+		#	x.rect.y=piso.rect.y-x.height
 
 		for event in pygame.event.get():
 			if tecla[K_LEFT]:
