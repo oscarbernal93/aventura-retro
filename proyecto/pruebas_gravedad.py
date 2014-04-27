@@ -6,7 +6,7 @@ from pygame.locals import *
 
 ##	CONSTANTES	##
 ANCHO=800
-ALTO=600
+ALTO=640
 NEGRO = (0,0,0)
 BLANCO = (255,255,255)
 ROJO = (255,0,0) 
@@ -25,6 +25,8 @@ class Block(pygame.sprite.Sprite):
        self.image.fill(color)
        #define el rectangulo de coliciones
        self.rect = self.image.get_rect()
+       self.vely = 1
+       self.velx = 0
 
 ##	FUNCIONES	##
 
@@ -39,7 +41,8 @@ def cargar_imagen(archivo,transpartente = False):
 	return imagen
 
 def gravedad(bloque):
-	bloque.rect.y += 1
+	bloque.rect.y += bloque.vely
+	bloque.rect.x += bloque.velx
 
 # funcion principal del juego
 def juego():
@@ -56,7 +59,7 @@ def juego():
 	#definicion del piso
 	piso = Block(NEGRO,800,100)
 	piso.rect.x=0
-	piso.rect.y=500
+	piso.rect.y=540
 	sprites.add(piso)
 	
 
@@ -67,10 +70,17 @@ def juego():
 	while True:
 		#se dibuja el fondo
 		pantalla.blit(fondo,(0,0))
+
 		gravedad(cubo)
+
 		sprites.draw(pantalla)
 		pygame.display.flip()
 		tecla = pygame.key.get_pressed()
+
+		lista_colicionados_con_piso = pygame.sprite.spritecollide(piso, sprites, False)
+
+		for x in lista_colicionados_con_piso:
+			x.vely = 0;
 
 		for event in pygame.event.get():
 			if tecla[K_LEFT]:
@@ -78,11 +88,11 @@ def juego():
 			if tecla[K_RIGHT]:
 				cubo.rect.x += 1
 			if tecla[K_UP]:
-				cubo.rect.y += -1
+				cubo.vely+= -1
 			if tecla[K_DOWN]:
-				cubo.rect.y += 1
+				cubo.vely+= 1
 			if tecla[K_a]:
-				print "teclaA"
+				cubo.vely += -3
 			if tecla[K_ESCAPE] or event.type == pygame.QUIT:
 				raise SystemExit
 		reloj.tick(60)
