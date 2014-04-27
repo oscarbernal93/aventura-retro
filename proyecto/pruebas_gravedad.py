@@ -90,9 +90,9 @@ def juego():
 
 		for event in pygame.event.get():
 			if tecla[K_LEFT]:
-				cubo.rect.x += -1
+				cubo.velx += -1
 			if tecla[K_RIGHT]:
-				cubo.rect.x += 1
+				cubo.velx += 1
 			if tecla[K_UP]:
 				if not cubo.aire:
 					cubo.vely += -10
