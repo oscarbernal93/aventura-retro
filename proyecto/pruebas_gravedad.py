@@ -31,6 +31,7 @@ class Block(pygame.sprite.Sprite):
        self.velx = 0
        self.aire = True   # atributo para saber si esta en el aire
        self.bloqueo = False  # atributo para saber si bloquea el paso 
+       self.frenar = False
 
 ##	FUNCIONES	##
 
@@ -72,8 +73,8 @@ def juego():
 	cosa.rect.y=300
 	sprites.add(cosa)
 	# definicion aleatoria de objetos
-	for i in range(30):
-		b = Block(NEGRO, 200, 10)
+	for i in range(20):
+		b = Block(NEGRO, 100, 20)
 		b.rect.y = random.randrange(ALTO)
 		b.rect.x = random.randrange(ANCHO)
 		sprites.add(b)
@@ -92,29 +93,46 @@ def juego():
 		pantalla.blit(cubo.image,cubo.rect)
 		pygame.display.flip()
 
-		lista_colicionados_con_cubo = pygame.sprite.spritecollide(cubo, sprites, False)
-
+		alone = True;
 		for x in sprites:
-			if x in lista_colicionados_con_cubo:
-				cubo.aire = False
-				cubo.vely = 0
-				cubo.rect.y=x.rect.y-cubo.height+1
-
-		tecla = pygame.key.get_pressed()
+			if pygame.sprite.collide_rect(cubo, x):
+				if cubo.vely > 0 and cubo.rect.y < x.rect.y:  ## si esta cayendo
+					cubo.aire = False
+					cubo.vely = 0
+					cubo.rect.y=x.rect.y-cubo.height+1
+				elif cubo.vely < 0 and cubo.rect.y > x.rect.y:  ## si esta saltando
+					cubo.aire = True
+					cubo.vely = 0
+					cubo.rect.y=x.rect.y+cubo.height-1
+				elif cubo.velx > 0 and cubo.frenar: ## si se mueve a la derecha y va a frenar, frena
+					cubo.velx += -1 
+				elif cubo.velx < 0 and cubo.frenar: ## si se mueve a la izquierda y va a frenar, frena
+					cubo.velx += 1 
+				alone = False
+		if alone:
+			cubo.aire=True
 		for event in pygame.event.get():
-			if tecla[K_LEFT]:
-				cubo.velx += -1
-			if tecla[K_RIGHT]:
-				cubo.velx += 1
-			if tecla[K_UP]:
-				if not cubo.aire:
-					cubo.vely += -10
-				cubo.aire=True
-			if tecla[K_DOWN]:
-				cubo.vely+= 1
-			#if tecla[K_a]:
+			if event.type == pygame.KEYDOWN :
+				if event.key == pygame.K_LEFT :
+					cubo.frenar=False
+					cubo.velx += -1
+				elif event.key == pygame.K_RIGHT:
+					cubo.frenar=False
+					cubo.velx += 1
+				elif event.key == pygame.K_UP:
+					if not cubo.aire:
+						cubo.vely += -10
+					cubo.aire=True
+				elif event.key == pygame.K_DOWN:
+					cubo.vely+= 1
+				#if event.key == pygame.K_a:
 				
-			if tecla[K_ESCAPE] or event.type == pygame.QUIT:
+				if event.key == pygame.K_ESCAPE:
+					raise SystemExit
+			if event.type == pygame.QUIT:
 				raise SystemExit
+			if event.type == pygame.KEYUP :
+				if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT :
+					cubo.frenar = True
 		reloj.tick(60)
 juego()
