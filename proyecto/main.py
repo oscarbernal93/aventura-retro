@@ -8,7 +8,7 @@ import ConfigParser
 
 #####------------------------------------------
 #####-----------constantes
-
+#tamano sprites
 SX = 32
 SY = 32
 
@@ -46,10 +46,10 @@ def cargar_imagen(archivo,transpartente = False):
 
 #funcion para la carga de mapas, retorna el sprite correspondiente en la
 #matriz del atributo mapa, de la etiqueta [nivel]
-def cargar_mapa(archivo):
+def cargar_mapa(archivo,nivel):
 	externo = ConfigParser.ConfigParser()
 	externo.read(archivo)
-	mapa = externo.get("nivel", "mapa").split("\n")
+	mapa = externo.get(nivel, "mapa").split("\n")
 	sprites = cargar_sprites("terrain.png",SX, SY)
 	print mapa
 	mapa_con_sprites = []
@@ -88,19 +88,32 @@ def cargar_sprites(archivo,ancho,alto):
 
 def main():
 	##25x20 en la matriz del ini
-	ventana = crear_ventana(800,640,"fondo.jpg","mapa1")
-	mapa = cargar_mapa("mapa1.ini")
+	corrimientox=0
+	corrimientoy=0
+	ventana = crear_ventana(1000,640,"fondo.jpg","mapa1")
+	mapa = cargar_mapa("mapa1.ini","nivel")
 	while True:
+		#antes de dibujar los sprite se dibuja el fondo
+		ventana.fill((0,0,0))
+
+		fondo_ventana = pygame.image.load("fondo.jpg").convert()
+		#se anade fondo a la ventana
+		ventana.blit(fondo_ventana,(0,0))
 		for x, fila in enumerate (mapa):
 			for y, cuadro in enumerate (fila):
-				ventana.blit (cuadro, (y*(SY),x*(SX)))
+				ventana.blit (cuadro, (y*(SY)+corrimientoy,x*(SX)+corrimientox))
 		#se muestra la ventana
 		pygame.display.flip()
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				sys.exit()
-
+			if event.type == pygame.KEYDOWN :
+				if event.key == pygame.K_LEFT :
+					corrimientoy += 15
+				elif event.key == pygame.K_RIGHT:
+					corrimientoy -= 15
+					mapa = cargar_mapa("mapa1.ini","nivel2")
 
 ###---ejecucion del main
 if __name__ == "__main__":
