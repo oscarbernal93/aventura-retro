@@ -113,7 +113,9 @@ def main():
 					corrimientoy += 15
 				elif event.key == pygame.K_RIGHT:
 					corrimientoy -= 15
-					mapa = cargar_mapa("mapa1.ini","nivel2")
+					#carga el nivel 2
+					#mapa = cargar_mapa("mapa1.ini","nivel2")
+					mapa = cargar_mapa("mapa1.ini","nivel")
 
 ###---ejecucion del main
 if __name__ == "__main__":
